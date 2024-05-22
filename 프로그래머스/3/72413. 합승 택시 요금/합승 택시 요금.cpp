@@ -1,63 +1,59 @@
 #include <string>
-#include <iostream>
 #include <vector>
 #include <queue>
-#include <climits>
+#include <iostream>
 #define INF 987654321
 
 using namespace std;
 
 int N;
-int d[3][201];
+
+// vector<pair<int,int>> a[201];
 vector<pair<int,int>> node[201];
+int d[3][201];
 
-void dijkstra(int idx, int num)
+void dijkstra(int idx, int start)
 {
-    priority_queue<pair<int,int>> pq;
-    pq.push({0, num});
-
-    for (int i = 1; i <= N; i++)    //d초기화
+    for (int i = 1; i <= N; i++)
     {
         d[idx][i] = INF;
     }
-    d[idx][num] = 0;
+    
+    d[idx][start] = 0;
+    priority_queue<pair<int,int>> pq;
+    pq.push(make_pair(start, 0));
 
     while (!pq.empty())
     {
-        int w = pq.top().first;
-        int x = pq.top().second;
-        // cout << "w = " << w << "\nx = " << x << endl;
+        int current = pq.top().first;
+        int distance = -pq.top().second;
         pq.pop();
-        // cout << "pq.empty = " << pq.empty() << endl;
-        if(d[idx][x] < w)
-        {
-            continue;
-        }
+        if(d[idx][current] < distance) continue;
 
-        for (int i = 0; i < node[x].size(); i++)
+        for (int i = 0; i < node[current].size(); i++)
         {
-            int nx = node[x][i].first;
-            int nw = w + node[x][i].second;
+            int next = node[current][i].first;
+            int nextDistance = distance + node[current][i].second;
 
-            if(d[idx][nx] > nw)
+            if(nextDistance < d[idx][next])
             {
-                d[idx][nx] = nw;
-                pq.push({nw, nx});
+                d[idx][next] = nextDistance;
+                pq.push(make_pair(next, -nextDistance));
             }
-        }   
+        }           
     }
 }
 
-//n = 지점개수 s = 출발지점 a = a의 도착지점 b = b의 도착지점 fares = 지점 사이 택시요금
+
 int solution(int n, int s, int a, int b, vector<vector<int>> fares) {
-    int answer = INT_MAX;
+    int answer = INF;
     N = n;
     for (int i = 0; i < fares.size(); i++)
     {
-        node[fares[i][0]].push_back({fares[i][1], fares[i][2]});
-        node[fares[i][1]].push_back({fares[i][0], fares[i][2]});
+        node[fares[i][0]].push_back(make_pair(fares[i][1],fares[i][2]));
+        node[fares[i][1]].push_back(make_pair(fares[i][0],fares[i][2]));
     }
-    
+
     dijkstra(0, s);
     dijkstra(1, a);
     dijkstra(2, b);
@@ -65,7 +61,9 @@ int solution(int n, int s, int a, int b, vector<vector<int>> fares) {
     for (int i = 1; i <= n; i++)
     {
         if(d[0][i] == INF || d[1][i] == INF || d[2][i] == INF) continue;
+        cout << d[0][i] << " " << d[1][i] << " " << d[2][i] << "\n";
         answer = min(answer, d[0][i] + d[1][i] + d[2][i]);
     }
+    
     return answer;
 }
