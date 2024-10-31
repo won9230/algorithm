@@ -5,45 +5,54 @@
 using namespace std;
 
 int main(){
-    int n = 0;
-    int start,end;
-    int arr[100001];
-    int m;
+    int n;
+    long long m, r, l;
+    vector<int> cMax;
+    int tmp = 0;
     int ans = 0;
+
     cin >> n;
     for (int i = 0; i < n; i++)
     {
-        cin >> arr[i];
+        cin >> tmp;
+        cMax.push_back(tmp);
     }
     cin >> m;
 
-    sort(arr, arr + n);
-    start = 0;
-    end = arr[n - 1];
-    
-    while (start <= end)
+    l = 0;
+    r = m;
+    tmp = 0;
+    sort(cMax.begin(),cMax.end());
+    for (int i = 0; i < cMax.size(); i++)
     {
-        int sum = 0;
-        int mid = (start + end) / 2;
+        tmp += cMax[i];
+    }
+    if(tmp <= m)
+    {
+        cout << cMax.back();
+        return 0;
+    }
+    
+    while(r >= l){
+        int mid = (r + l) / 2;
 
+        tmp = 0;
 
-        for (int i = 0; i < n; i++)
+        for (int i = 0; i < cMax.size(); i++)
         {
-            sum += min(arr[i], mid);
+            tmp += min(mid, cMax[i]);
         }
+        
+        if(tmp > m)
+        {
 
-        if(sum <= m)
+            r = mid - 1;
+        }
+        else
         {
             ans = mid;
-            start = mid+1;
+            l = mid + 1;
         }
-        else{
-            end = mid - 1;
-        }
-
-
     }
     cout << ans;
-    return 0;
-    
 }
